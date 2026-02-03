@@ -10,7 +10,7 @@ Memories Site is a full-stack blogging and social platform where users can creat
 Authenticated users can interact through comments, making it a community-driven application.
 
 ## 📂 GitHub Repository
-🔗 https://github.com/yourusername/memories-site
+🔗 https://github.com/Elton1825/memories-site
 
 
 ## ✨ Features
@@ -39,7 +39,7 @@ Authenticated users can interact through comments, making it a community-driven 
 ## 📦 Installation & Setup
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/memories-site.git
+git clone https://github.com/Elton1825/memories-site.git
 
 # Install dependencies
 npm install
