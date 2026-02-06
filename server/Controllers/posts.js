@@ -19,7 +19,7 @@ export const createPost = async (req, res) => {
     // Log incoming request
     console.log("Incoming createPost request body:", post);
 
-    // Optional: Validate required fields before saving
+    //  Validate required fields before saving
     if ( !post.title || !post.message) {
       return res.status(400).json({ message: "Creator, title, and message are required!" });
     }
@@ -76,35 +76,45 @@ export const deletePost = async (req, res) => {
   }
 };
 
-// LIKE post
+//Like post
 export const likePost = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
 
-  if (!req.userId) return res.status(401).json({ message: "Unauthenticated!" });
+    if (!req.userId) return res.json({ message: "Unauthenticated" });
 
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(404).send("No post with that id");
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
 
-  try {
-    const post = await PostMessage.findById(id);
+    try {
+        const post = await PostMessage.findById(id);
 
-    if (!post) return res.status(404).json({ message: "Post not found" });
+        // ✅ FIX: Use 'likeCount' because that is what is in your Database
+        if (!post.likeCount) post.likeCount = [];
 
-    const index = post.likes.findIndex((uid) => uid === String(req.userId));
+        const index = post.likeCount.findIndex((id) => id === String(req.userId));
 
-    if (index === -1) {
-      post.likes.push(req.userId);
-    } else {
-      post.likes = post.likes.filter((uid) => uid !== String(req.userId));
+        if (index === -1) {
+            // Like the post
+            post.likeCount.push(req.userId);
+        } else {
+            // Dislike the post
+            post.likeCount = post.likeCount.filter((id) => id !== String(req.userId));
+        }
+
+        // ✅ FIX: Update 'likeCount' in the database
+        const updatedPost = await PostMessage.findByIdAndUpdate(
+            id, 
+            { likeCount: post.likeCount }, // Update the correct field name
+            { new: true }
+        );
+        
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
     }
 
-    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
-    res.status(200).json(updatedPost);
-  } catch (error) {
-    console.error("Error liking post:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
+}
+
 
 
 
